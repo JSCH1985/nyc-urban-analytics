@@ -1,0 +1,4 @@
+role Queens
+	modelPermission: read
+
+	tablePermission DimZone = [Borough] = "Queens"

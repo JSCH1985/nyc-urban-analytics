@@ -1,0 +1,43 @@
+relationship FactTaxiDaily_DimDate
+	fromColumn: FactTaxiDaily.date_key
+	toColumn: DimDate.date_key
+
+relationship FactTaxiDaily_DimZone
+	fromColumn: FactTaxiDaily.zone_id
+	toColumn: DimZone.zone_id
+
+relationship FactAirQualityDaily_DimDate
+	fromColumn: FactAirQualityDaily.date_key
+	toColumn: DimDate.date_key
+
+relationship FactAirQualityDaily_DimZone
+	fromColumn: FactAirQualityDaily.zone_id
+	toColumn: DimZone.zone_id
+
+relationship DimFX_DimDate
+	fromColumn: DimFX.date_key
+	toColumn: DimDate.date_key
+
+relationship FactTaxiHourly_DimDate
+	fromColumn: FactTaxiHourly.date_key
+	toColumn: DimDate.date_key
+
+relationship FactTaxiHourly_DimZone
+	fromColumn: FactTaxiHourly.zone_id
+	toColumn: DimZone.zone_id
+
+relationship FactTaxiHourly_DimHour
+	fromColumn: FactTaxiHourly.hour
+	toColumn: DimHour.hour
+
+relationship FactAirQualityHourly_DimDate
+	fromColumn: FactAirQualityHourly.date_key
+	toColumn: DimDate.date_key
+
+relationship FactAirQualityHourly_DimZone
+	fromColumn: FactAirQualityHourly.zone_id
+	toColumn: DimZone.zone_id
+
+relationship FactAirQualityHourly_DimHour
+	fromColumn: FactAirQualityHourly.hour
+	toColumn: DimHour.hour

@@ -1,0 +1,15 @@
+{
+  "formatVersion": "202502",
+  "computeEngineSettings": {},
+  "name": "df_ecb_fx",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "gatewayObjectId": null,
+  "queriesMetadata": {
+    "ecb_usd_eur": {
+      "queryId": "5d3b2c1a-7e4f-4a6b-9c8d-1e2f3a4b5c6d",
+      "queryName": "ecb_usd_eur",
+      "loadEnabled": true
+    }
+  }
+}

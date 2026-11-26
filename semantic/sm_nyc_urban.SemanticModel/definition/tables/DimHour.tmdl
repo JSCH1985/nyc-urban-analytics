@@ -1,0 +1,32 @@
+table DimHour
+
+	column hour
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: hour
+
+	column 'Hour of Day'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: hour
+		sourceColumn: hour_label
+
+	column day_part_order
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: day_part_order
+
+	column 'Day Part'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: day_part_order
+		sourceColumn: day_part
+
+	partition DimHour = entity
+		mode: directLake
+		source
+			entityName: DimHour
+			schemaName: dbo
+			expressionSource: DatabaseQuery

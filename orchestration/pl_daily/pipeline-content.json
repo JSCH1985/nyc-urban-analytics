@@ -1,0 +1,267 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Taxi files",
+        "type": "ExecutePipeline",
+        "dependsOn": [],
+        "policy": {
+          "secureInput": false
+        },
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "{{PL_TAXI_COPY_ID}}",
+            "type": "PipelineReference"
+          },
+          "parameters": {},
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "name": "ECB FX",
+        "type": "RefreshDataflow",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "dataflowId": "{{DF_ECB_FX_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric"
+        }
+      },
+      {
+        "name": "World Bank GDP",
+        "type": "RefreshDataflow",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "dataflowId": "{{DF_WORLDBANK_GDP_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric"
+        }
+      },
+      {
+        "name": "OpenAQ",
+        "type": "RefreshDataflow",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "dataflowId": "{{DF_OPENAQ_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric"
+        }
+      },
+      {
+        "name": "OpenAQ history",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "OpenAQ",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "{{NB_BRONZE_OPENAQ_HISTORY_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}"
+        }
+      },
+      {
+        "name": "Weather",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "OpenAQ history",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "{{NB_BRONZE_WEATHER_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}"
+        }
+      },
+      {
+        "name": "Silver reference",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "ECB FX",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "World Bank GDP",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Weather",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "{{NB_SILVER_REFERENCE_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}"
+        }
+      },
+      {
+        "name": "Silver taxi",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Taxi files",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Silver reference",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.04:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "{{NB_SILVER_TAXI_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}",
+          "parameters": {
+            "months": {
+              "value": "",
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "Silver air quality",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Silver taxi",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "{{NB_SILVER_AIR_QUALITY_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}"
+        }
+      },
+      {
+        "name": "Silver weather",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Silver air quality",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "{{NB_SILVER_WEATHER_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}"
+        }
+      },
+      {
+        "name": "Gold",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Silver weather",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 120,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "{{NB_GOLD_LOAD_ID}}",
+          "workspaceId": "{{WORKSPACE_ID}}",
+          "parameters": {
+            "full": {
+              "value": "false",
+              "type": "string"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

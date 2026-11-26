@@ -1,0 +1,72 @@
+table FactAirQualityDaily
+
+	column date_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: date_key
+
+	column location_id
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: location_id
+
+	column Pollutant
+		dataType: string
+		summarizeBy: none
+		sourceColumn: parameter
+
+	column zone_id
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	column Unit
+		dataType: string
+		summarizeBy: none
+		sourceColumn: unit
+
+	column reading_count
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: readings
+
+	column value_sum
+		dataType: double
+		isHidden
+		summarizeBy: none
+		sourceColumn: value_sum
+
+	column value_max
+		dataType: double
+		isHidden
+		summarizeBy: none
+		sourceColumn: value_max
+
+	measure Readings = SUM(FactAirQualityDaily[reading_count])
+		formatString: #,0
+
+	measure Monitors = DISTINCTCOUNT(FactAirQualityDaily[location_id])
+		formatString: #,0
+
+	measure 'Avg PM2.5 ug/m3' = DIVIDE(CALCULATE(SUM(FactAirQualityDaily[value_sum]), FactAirQualityDaily[Pollutant] = "pm25"), CALCULATE(SUM(FactAirQualityDaily[reading_count]), FactAirQualityDaily[Pollutant] = "pm25"))
+		formatString: 0.0
+
+	measure 'Max PM2.5 ug/m3' = CALCULATE(MAX(FactAirQualityDaily[value_max]), FactAirQualityDaily[Pollutant] = "pm25")
+		formatString: 0.0
+
+	measure 'Avg NO2 ppb' = DIVIDE(CALCULATE(SUM(FactAirQualityDaily[value_sum]), FactAirQualityDaily[Pollutant] = "no2"), CALCULATE(SUM(FactAirQualityDaily[reading_count]), FactAirQualityDaily[Pollutant] = "no2"))
+		formatString: 0.0
+
+	measure 'Avg O3 ppb' = DIVIDE(CALCULATE(SUM(FactAirQualityDaily[value_sum]), FactAirQualityDaily[Pollutant] = "o3"), CALCULATE(SUM(FactAirQualityDaily[reading_count]), FactAirQualityDaily[Pollutant] = "o3"))
+		formatString: 0.0
+
+	partition FactAirQualityDaily = entity
+		mode: directLake
+		source
+			entityName: FactAirQualityDaily
+			schemaName: dbo
+			expressionSource: DatabaseQuery

@@ -1,0 +1,29 @@
+table DimZone
+
+	column zone_id
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	column Borough
+		dataType: string
+		summarizeBy: none
+		sourceColumn: borough
+
+	column Zone
+		dataType: string
+		summarizeBy: none
+		sourceColumn: zone
+
+	column 'Service Zone'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: service_zone
+
+	partition DimZone = entity
+		mode: directLake
+		source
+			entityName: DimZone
+			schemaName: dbo
+			expressionSource: DatabaseQuery

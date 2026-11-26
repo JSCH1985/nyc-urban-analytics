@@ -1,0 +1,29 @@
+table DimGDP
+
+	column year
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+
+	column country_code
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: country_code
+
+	column gdp_usd
+		dataType: double
+		isHidden
+		summarizeBy: none
+		sourceColumn: gdp_usd
+
+	measure 'GDP USD' = CALCULATE(SUM(DimGDP[gdp_usd]), TREATAS(VALUES(DimDate[Year]), DimGDP[year]))
+		formatString: #,0
+
+	partition DimGDP = entity
+		mode: directLake
+		source
+			entityName: DimGDP
+			schemaName: dbo
+			expressionSource: DatabaseQuery

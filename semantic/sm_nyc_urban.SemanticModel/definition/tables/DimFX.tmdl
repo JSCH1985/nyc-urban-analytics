@@ -1,0 +1,34 @@
+table DimFX
+
+	column date_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: date_key
+
+	column rate_date
+		dataType: dateTime
+		isHidden
+		summarizeBy: none
+		sourceColumn: rate_date
+
+	column 'USD per EUR'
+		dataType: decimal
+		formatString: 0.0000
+		summarizeBy: none
+		sourceColumn: usd_per_eur
+
+	column 'Is Published'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: is_published
+
+	measure 'Avg USD per EUR' = AVERAGE(DimFX[USD per EUR])
+		formatString: 0.0000
+
+	partition DimFX = entity
+		mode: directLake
+		source
+			entityName: DimFX
+			schemaName: dbo
+			expressionSource: DatabaseQuery
